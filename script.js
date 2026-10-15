@@ -1,10 +1,9 @@
-// Background Canvas com Efeito de Campo Estelar / Partículas Dinâmicas
+// Background Canvas com Efeito de Brasas de Fogueira e Poeira Ancestral
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
-const particleCount = 75;
-const maxDistance = 150;
-let mouse = { x: null, y: null, radius: 180 };
+const particleCount = 65;
+let mouse = { x: null, y: null, radius: 150 };
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -18,26 +17,40 @@ window.addEventListener('mousemove', (e) => {
   mouse.y = e.y;
 });
 
-class Particle {
+class EmberParticle {
   constructor() {
+    this.reset();
+  }
+
+  reset() {
     this.x = Math.random() * canvas.width;
+    // Começam perto da base ou espalhadas verticalmente
     this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 1.5;
-    this.vy = (Math.random() - 0.5) * 1.5;
-    this.radius = Math.random() * 2.5 + 1;
-    this.color = Math.random() > 0.3 ? '#00f3ff' : '#ff0055';
-    this.pulse = Math.random() * 0.05;
+    // Movimento suave para cima (como brasas subindo de uma fogueira)
+    this.vy = -(Math.random() * 1.2 + 0.3);
+    // Leve oscilação horizontal (como vento em uma caverna ou castelo)
+    this.vx = (Math.random() - 0.5) * 0.6;
+    this.radius = Math.random() * 2.2 + 0.8;
+    
+    // Paleta medieval: tons de brasa, ouro velho, faíscas de fogo e cinzas
+    const colors = ['#d4af37', '#ff6b00', '#ff2a00', '#a38f68', '#524330'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+    
+    this.alpha = Math.random() * 0.7 + 0.2;
+    this.decay = Math.random() * 0.005 + 0.002;
   }
 
   update() {
-    this.x += this.vx;
     this.y += this.vy;
+    this.x += this.vx + Math.sin(this.y * 0.01) * 0.3; // Efeito de flutuação no ar
 
-    // Rebate nas bordas
-    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    // Se a brasa subir demais ou sumir, recicla na parte inferior
+    if (this.y < -10) {
+      this.y = canvas.height + 10;
+      this.x = Math.random() * canvas.width;
+    }
 
-    // Interatividade com o cursor do mouse
+    // Interatividade suave com o cursor do tocha/mouse (afasta as cinzas)
     if (mouse.x !== null && mouse.y !== null) {
       const dx = mouse.x - this.x;
       const dy = mouse.y - this.y;
@@ -45,8 +58,8 @@ class Particle {
 
       if (dist < mouse.radius) {
         const force = (mouse.radius - dist) / mouse.radius;
-        this.x -= (dx / dist) * force * 4;
-        this.y -= (dy / dist) * force * 4;
+        this.x -= (dx / dist) * force * 2;
+        this.y -= (dy / dist) * force * 2;
       }
     }
   }
@@ -55,17 +68,19 @@ class Particle {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.alpha;
     ctx.shadowBlur = 10;
     ctx.shadowColor = this.color;
     ctx.fill();
     ctx.shadowBlur = 0; // Reset
+    ctx.globalAlpha = 1.0; // Reset global alpha
   }
 }
 
 function initParticles() {
   particles = [];
   for (let i = 0; i < particleCount; i++) {
-    particles.push(new Particle());
+    particles.push(new EmberParticle());
   }
 }
 
@@ -75,50 +90,34 @@ function animateParticles() {
   for (let i = 0; i < particles.length; i++) {
     particles[i].update();
     particles[i].draw();
-
-    // Linhas de Conexão entre Partículas
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < maxDistance) {
-        const alpha = 1 - dist / maxDistance;
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(0, 243, 255, ${alpha * 0.3})`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-      }
-    }
   }
+
   requestAnimationFrame(animateParticles);
 }
 
 initParticles();
 animateParticles();
 
-// Lógica de Validação e Pop-up
+// Lógica de Validação e Pergaminho de Resultado
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('vagaForm');
   const inputAltura = document.getElementById('altura');
   const convertMsg = document.getElementById('convert-msg');
 
-  // Elementos do Modal
+  // Elementos do Modal (Pergaminho)
   const modalOverlay = document.getElementById('resultado-modal');
   const modalCard = modalOverlay.querySelector('.modal-card');
   const modalConteudo = document.getElementById('resultado-conteudo');
   const btnCloseX = document.getElementById('btn-close-modal');
 
-  // Conversão Automática de Altura
+  // Conversão Automática de Altura (centímetros para metros)
   function autoConverterAltura() {
     let valor = parseFloat(inputAltura.value);
     if (!isNaN(valor) && valor > 3.0) {
       const emMetros = (valor / 100).toFixed(2);
       inputAltura.value = emMetros;
-      convertMsg.textContent = `⚡ Convertido: ${valor}cm ➔ ${emMetros}m`;
-      setTimeout(() => { convertMsg.textContent = ''; }, 3500);
+      convertMsg.textContent = `✨ Feitiço de Medida: ${valor}cm ➔ ${emMetros}m`;
+      setTimeout(() => { convertMsg.textContent = ''; }, 4000);
     }
   }
 
@@ -148,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Envio do Formulário
+  // Envio do Formulário e Julgamento Real
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     autoConverterAltura();
@@ -168,53 +167,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isElegivel) {
       modalConteudo.innerHTML = `
-        <span class="pop-status-badge">✔ REQUISITOS ATENDIDOS</span>
-        <h2 class="pop-title">Triagem Concluída</h2>
-        <p class="pop-sub">Candidato: <strong>${sanitizarTexto(nome)}</strong></p>
+        <span class="pop-status-badge">✔ APROVADO PELO CONSELHO</span>
+        <h2 class="pop-title">Decreto Favorável</h2>
+        <p class="pop-sub">Valente: <strong>${sanitizarTexto(nome)}</strong></p>
 
         <div class="pop-message-box">
-          Parabéns! Você pode prosseguir no processo para a vaga!
+          Glória! Suas virtudes foram aceitas para a Guarda do Reino!
         </div>
 
         <div class="req-list">
           <div class="req-item">
-            <span>Maioridade (≥ 18 anos):</span>
-            <strong class="status-pass">✔ ${idade} anos</strong>
+            <span>Maioridade (≥ 18 ciclos):</span>
+            <strong class="status-pass">✔ ${idade} ciclos</strong>
           </div>
           <div class="req-item">
-            <span>Altura Mínima (≥ 1.70 m):</span>
+            <span>Envergadura Mínima (≥ 1.70 m):</span>
             <strong class="status-pass">✔ ${altura.toFixed(2)} m</strong>
           </div>
         </div>
 
-        <button type="button" class="btn-close-pop" id="btn-ok">Prosseguir</button>
+        <button type="button" class="btn-close-pop" id="btn-ok">Aceitar Juramento</button>
       `;
     } else {
       modalConteudo.innerHTML = `
-        <span class="pop-status-badge">✖ INAPTIDÃO DETECTADA</span>
-        <h2 class="pop-title">Triagem Concluída</h2>
-        <p class="pop-sub">Candidato: <strong>${sanitizarTexto(nome)}</strong></p>
+        <span class="pop-status-badge">✖ REJEITADO PELO CONSELHO</span>
+        <h2 class="pop-title">Sentença de Inaptidão</h2>
+        <p class="pop-sub">Valente: <strong>${sanitizarTexto(nome)}</strong></p>
 
         <div class="pop-message-box">
-          Infelizmente você não é apto à vaga.
+          Infelizmente vossas credenciais não cumprem as leis do reino.
         </div>
 
         <div class="req-list">
           <div class="req-item">
-            <span>Maioridade (≥ 18 anos):</span>
+            <span>Maioridade (≥ 18 ciclos):</span>
             <strong class="${atendeIdade ? 'status-pass' : 'status-fail'}">
-              ${atendeIdade ? '✔' : '✖'} ${idade} anos
+              ${atendeIdade ? '✔' : '✖'} ${idade} ciclos
             </strong>
           </div>
           <div class="req-item">
-            <span>Altura Mínima (≥ 1.70 m):</span>
+            <span>Envergadura Mínima (≥ 1.70 m):</span>
             <strong class="${atendeAltura ? 'status-pass' : 'status-fail'}">
               ${atendeAltura ? '✔' : '✖'} ${altura.toFixed(2)} m
             </strong>
           </div>
         </div>
 
-        <button type="button" class="btn-close-pop" id="btn-ok">Entendido</button>
+        <button type="button" class="btn-close-pop" id="btn-ok">Compreendido</button>
       `;
     }
 

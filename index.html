@@ -1,45 +1,44 @@
-<!-- Alteração do HTML! -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CYBER-SELECT // Triagem Animada</title>
+  <title>AVALIAÇÃO REAL // Triagem do Reino</title>
   
-  <!-- Fontes Google -->
+  <!-- Fontes Medievais do Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=MedievalSharp&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Canvas de Fundo e Efeitos de Grade -->
+  <!-- Canvas de Fundo (Partículas Místicas / Chamas) e Efeitos -->
   <canvas id="bg-canvas"></canvas>
   <div class="overlay-grid"></div>
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
 
-  <!-- Container Principal -->
+  <!-- Container Principal / Pergaminho -->
   <main class="app-container">
     <header class="header">
-      <span class="brand-badge">SYSTEM v4.0 // HYPER-DRIVE</span>
-      <h1 class="glitch-title" data-text="Cyber Select">Cyber Select</h1>
-      <p>Triagem Automatizada de Candidatos</p>
+      <span class="brand-badge">DECRETO REAL // COROA DO REINO</span>
+      <h1 class="glitch-title">Conselho dos Guardas</h1>
+      <p>Registro e Triagem de Candidatos à Guardião</p>
     </header>
 
     <form id="vagaForm" autocomplete="off">
       <div class="form-group">
-        <label for="nome">Nome do Candidato</label>
+        <label for="nome">Nome do Valente</label>
         <div class="input-wrapper">
-          <input type="text" id="nome" placeholder="Ex: Alex Vance" required />
-          <span class="input-badge">ID</span>
+          <input type="text" id="nome" placeholder="Ex: Sir Percival" required />
+          <span class="input-badge">NOME</span>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="idade">Idade (Anos)</label>
+        <label for="idade">Idade (Ciclos de Inverno)</label>
         <div class="input-wrapper">
           <input type="number" id="idade" min="1" max="120" placeholder="Ex: 22" required />
           <span class="input-badge">MÍN 18</span>
@@ -47,28 +46,28 @@
       </div>
 
       <div class="form-group">
-        <label for="altura">Altura (Metros ou cm)</label>
+        <label for="altura">Envergadura (Metros ou cm)</label>
         <div class="input-wrapper">
           <input type="number" id="altura" step="0.01" min="0.5" max="250" placeholder="Ex: 175 ou 1.75" required />
           <span class="input-badge">MÍN 1.70m</span>
         </div>
         <div class="hint-text">
-          <span>Digitar em cm converte em tempo real</span>
+          <span>Digitar em centímetros converte em tempo real</span>
           <span id="convert-msg" class="auto-converted"></span>
         </div>
       </div>
 
       <button type="submit" class="btn-submit">
-        <span>Analisar Aptidão</span>
+        <span>Apresentar ao Conselho</span>
       </button>
     </form>
   </main>
 
-  <!-- Pop-up / Modal Holográfico de Resultado -->
+  <!-- Pergaminho de Resultado Real (Modal) -->
   <div id="resultado-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="scan-line"></div>
-      <button type="button" id="btn-close-modal" class="modal-close" aria-label="Fechar Pop-up">&times;</button>
+      <button type="button" id="btn-close-modal" class="modal-close" aria-label="Fechar Pergaminho">&times;</button>
       <div id="resultado-conteudo"></div>
     </div>
   </div>
